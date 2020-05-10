@@ -5,7 +5,7 @@ function Enemy(context, sprite_path) {
     this.Sprite  = new Image();
     this.Sprite.src = sprite_path;
     this.isNeedDelete = false;
-    this.PositionX = 64 + Math.random() * (400 - 64);
+    this.PositionX = 64 + Math.random() * (1800 - 64);
     this.PositionY = Math.random() * 200;
     this.VelX      = Math.random() - 0.5;
     this.VelY      = Math.random() - 0.5;
@@ -16,7 +16,7 @@ Enemy.prototype = {
     update:function(){
         this.PositionX += this.VelX * 5;
         this.PositionY += this.VelY * 5;
-        if(this.PositionX > 500 - 64|| this.PositionX <= 0){
+        if(this.PositionX > 1800 - 64|| this.PositionX <= 0){
             this.VelX *= -1;
         }
        if(this.PositionY > 500 - 64 || this.PositionY <= 0 ){
@@ -32,7 +32,7 @@ Enemy.prototype = {
         }
     },
     get_distance: function(enemy_obj){
-        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2), Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
+        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2) + Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
     }
 };
 
@@ -46,27 +46,47 @@ function Player(context, sprite_path) {
     this.VelX      = 0;
     this.VelY      = 0;
     this.FrameCount = 0;
+    this.AnimOffset = 126 * 2;
+    this.Frames = 1;
+    this.LeftRight = false;
    
 }
 Player.prototype = {
     update:function(){
-        if(this.PositionX > 500 - 64|| this.PositionX <= 0){
-            this.VelX *= -1;
-        }
-       if(this.PositionY > 500 - 64 || this.PositionY <= 0 ){
-            this.VelY *= -1;
-        }
+       
        
         this.Context.drawImage(
-            this.Sprite, 0,Math.floor(this.FrameCount) * 96, 128, 96,  this.PositionX , this.PositionY , 128, 96
+            this.Sprite, Math.floor(this.FrameCount) * 84, this.AnimOffset , 84, 126,  this.PositionX , this.PositionY , 84, 126
         );
         this.FrameCount += 0.1;
-        if(Math.floor(this.FrameCount) >= 4) {
+        if(Math.floor(this.FrameCount) >=  this.Frames ) {
             this.FrameCount = 0;
         }
     },
+    stay: function() {
+        this.AnimOffset = 126 * 2;
+        if(this.LeftRight) {
+            this.FrameCount = 0;
+        } else {
+            this.FrameCount = 1;
+        }
+        this.Frames = 1;
+       
+    },
+    move_right: function() {
+        this.AnimOffset = 0;
+        this.Frames = 6;
+        this.PositionX += 10;
+        this.LeftRight = true;
+    },
+    move_left: function() {
+        this.AnimOffset = 126;
+        this.Frames = 6;
+        this.PositionX -= 10;
+        this.LeftRight = false;
+    },
     get_distance: function(enemy_obj){
-        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2), Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
+        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2) + Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
     }
 };
 function Immard(context, start_position){
@@ -79,31 +99,32 @@ function Immard(context, start_position){
     this.VelY       = 5;
     this.FrameCount = 0;
 }
+//680 371
 Immard.prototype = {
     update:function(){    
-        this.PositionY -= this.VelY;
-        if(this.PositionY < 10) {
+        this.PositionX += this.VelY;
+        if(this.PositionX  > 1800) {
             this.isNeedDelete = true;
         }
         this.Context.drawImage(
             this.Sprite, 0,Math.floor(this.FrameCount) * 48, 64, 48,  this.PositionX , this.PositionY , 32, 32
         );
-        this.FrameCount += 0.1;
+        this.FrameCount += 0.5;
         if(Math.floor(this.FrameCount) >= 4) {
             this.FrameCount = 0;
         }
     },
     get_distance: function(enemy_obj){
-        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2), Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
+        return Math.sqrt(Math.pow(this.PositionX - enemy_obj.PositionX, 2) + Math.pow(this.PositionY - enemy_obj.PositionY, 2) );
     }
 }
-function Scene(context) {
+function Scene(context, w, h) {
     this.Context = context;
-    this.Width  = context.width;
-    this.Height = context.height;
+    this.Width  = w;
+    this.Height = h;
     this.Background = new Image();
-    this.Background.src = "js/img/scene.png";
-    this.Player   = new Player(this.Context, "js/img/player.png");
+    this.Background.src = "js/img/scene.webp";
+    this.Player   = new Player(this.Context, "js/img/player2.png");
     
 
     this.Enemys = Array();
@@ -115,7 +136,7 @@ function Scene(context) {
 Scene.prototype = {
     update:function(){
         this.Context.drawImage(
-            this.Background , 0, 0, 500,500
+            this.Background , 0, 0,  this.Width ,this.Height
         );
         
         this.Player.update();
@@ -136,7 +157,7 @@ Scene.prototype = {
         for(var i = 0; i < this.Bombs.length; i++){
             for(var j = 0; j < this.Enemys.length; j++){
                 var dist = this.Bombs[i].get_distance(this.Enemys[j]);
-                if(dist < 3){
+                if(dist < 32 ){
                     this.Bombs[i].isNeedDelete = true;
                     this.Enemys[j].isNeedDelete = true;
                     //break;
@@ -167,20 +188,36 @@ Scene.prototype = {
 var scene;
 window.onload = function(){
     var example = document.getElementById("example");
-    ctx       = example.getContext('2d');
-    scene = new Scene(ctx);
+    ctx        = example.getContext('2d');
+    ctx.width  = document.body.clientWidth; //document.width is obsolete
+    ctx.height = document.body.clientHeight; //document.height is obsolete
+    canvasW = ctx.width;
+    canvasH = ctx.height;
+    scene = new Scene(ctx, canvasW, canvasH);
     var loop = setInterval(function(){
         scene.update();
-        ctx.clearRect(0, 0, ctx.width, ctx.height);
+       // ctx.clearRect(0, 0, ctx.width, ctx.height);
     }, 10);
 }
 
 document.addEventListener('keydown', function(event) {
     if (event.code == 'ArrowRight') {
-      scene.Player.PositionX+=10;
+      scene.Player.move_right();
     }
     if (event.code == 'ArrowLeft') {
-        scene.Player.PositionX-=10;
+        scene.Player.move_left();
+    }
+    if (event.code == 'ArrowUp') {
+        //scene.Player.PositionX-=10;
+        scene.add_bombs();
+    }
+});
+document.addEventListener('keyup', function(event) {
+    if (event.code == 'ArrowRight') {
+      scene.Player.stay();
+    }
+    if (event.code == 'ArrowLeft') {
+        scene.Player.stay();
     }
     if (event.code == 'ArrowUp') {
         //scene.Player.PositionX-=10;
