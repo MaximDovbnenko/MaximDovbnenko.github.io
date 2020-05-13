@@ -1,5 +1,3 @@
-
-
 function Enemy(context, sprite_path) {
     this.Context = context;
     this.Sprite  = new Image();
@@ -134,9 +132,9 @@ function Scene(context, w, h) {
     this.create_enemy(20);
 }
 Scene.prototype = {
-    update:function(){
+    update:function(canvasW, canvasH){
         this.Context.drawImage(
-            this.Background , 0, 0,  this.Width ,this.Height
+            this.Background , 0, 0
         );
         
         this.Player.update();
@@ -186,16 +184,26 @@ Scene.prototype = {
     }
 }
 var scene;
+var  canvasW, canvasH;
+var ctx;
 window.onload = function(){
     var example = document.getElementById("example");
     ctx        = example.getContext('2d');
-    ctx.width  = document.body.clientWidth; //document.width is obsolete
-    ctx.height = document.body.clientHeight; //document.height is obsolete
+    /*example.setAttribute("width", window.outerWidth);
+    example.setAttribute("height", window.outerHeight);
+    ctx.width  = window.innerWidth; //document.width is obsolete
+    ctx.height = window.innerHeight; //document.height is obsolete
     canvasW = ctx.width;
-    canvasH = ctx.height;
+    canvasH = ctx.height;*/
     scene = new Scene(ctx, canvasW, canvasH);
     var loop = setInterval(function(){
-        scene.update();
+        ctx.width  = window.innerWidth; //document.width is obsolete
+        ctx.height = window.innerHeight; //document.height is obsolete
+        example.setAttribute("width", window.outerWidth);
+        example.setAttribute("height", window.outerHeight);
+        canvasW = ctx.width;
+        canvasH = ctx.height;
+        scene.update(canvasW, canvasH);
        // ctx.clearRect(0, 0, ctx.width, ctx.height);
     }, 10);
 }
@@ -223,4 +231,11 @@ document.addEventListener('keyup', function(event) {
         //scene.Player.PositionX-=10;
         scene.add_bombs();
     }
+});
+
+window.addEventListener('resize', function(){
+    ctx.width  = window.innerWidth; //document.width is obsolete
+    ctx.height = window.innerHeight; //document.height is obsolete
+    canvasW = ctx.width;
+    canvasH = ctx.height;
 });
