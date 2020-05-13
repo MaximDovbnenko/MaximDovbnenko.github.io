@@ -3,10 +3,23 @@
   <meta charset='utf-8'>
   <head>
     <title>CovidKill</title>
-    <script src="js/main.js"></script>
+    <script src="lib/Jquery/jquery.js"></script>
+    <script src="lib/c3.min.js"></script>
+    <script src="lib/d3.v3.min.js"></script>
+    <script src="src/nqp.js"></script>
+    <link rel="stylesheet" type="text/css" href='lib/bootstrap-4/css/bootstrap.min.css' />
+    <link rel="stylesheet" type="text/css" href='lib/c3.min.css' />
   </head>
   <body>
-    <canvas id='example'>Обновите браузер</canvas>
-    
+      <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <canvas id='draw-context'></canvas>
+          </div>
+          <div class="col-sm">
+            <div id="error-graph"></div>
+          </div>
+      </div>
+    </div>
   </body>
 </html>

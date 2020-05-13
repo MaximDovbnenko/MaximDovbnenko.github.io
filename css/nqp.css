@@ -1,0 +1,18 @@
+canvas, #error-graph {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width:  500px;
+    height: 500px;
+}
+.setings{
+    margin-bottom: 30px;
+    border: 1px solid #e9ecef;
+    -webkit-border-radius: 5px 5px 5px 5px;
+}
+button, input {
+    margin: 20px;
+    margin-left: 10px;
+}
